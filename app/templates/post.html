@@ -1,0 +1,45 @@
+{%extends 'base.html'%}
+
+{%block content%}
+    <div class="row">
+        <h1>
+            Post 
+        </h1>
+        <div class="col-md-12">
+            <form action="" method="post" novalidate>
+                {{ form.hidden_tag() }} 
+                <p>
+                  Hi {{current_user.username }}, say something.
+                  {{ form.body(cols=90, rows=2)}} <br>
+                 {% for error in form.body.errors%}
+                    <span style="color: red;">
+                        {{error}}
+                    </span>
+                {%endfor%}
+                
+                </p>
+    
+            <p>
+                {{form.submit()}}
+            </p>
+            
+
+            </form>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-md-12">
+            {% for post in posts %}
+                {% if post %}
+                    <table>
+                        <tr valign="top">
+                            <td><img src="{{ post.author.avatar(36) }}"></td>
+                            <td>{{ post.author.username }} says: <br>{{ post.body }}</td>
+                        </tr>
+                    </table>
+                {%endif%}
+            {%endfor%}
+        </div>
+    </div>
+{%endblock%}
