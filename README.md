@@ -1,4 +1,3 @@
-# Chapter 7 assessment
-- make web store  page
-- added login and register forms
-- added errors and flash messages
+# Chapter 12 assessment
+-catch errors for user entry bugs
+-show relevant error messages
