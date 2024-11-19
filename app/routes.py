@@ -1,7 +1,7 @@
 from app import app, db
 from app.models import User, Post
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import LoginForm, RegisterForm, AddForm, EditProfileForm, PostForm 
+from app.forms import LoginForm, RegisterForm, EditProfileForm, PostForm 
 from flask_login import login_user, logout_user, login_required, current_user
 from datetime import datetime
 
@@ -17,12 +17,24 @@ def post():
       db.session.commit()
       flash('Your post is live')
       return redirect(url_for('post'))
-   posts = Post.query.all()
+   page= request.args.get('page', 1, type=int)
+   posts= Post.query.order_by(Post.timestamp.desc()).paginate(
+      page=page,
+      per_page=app.config['POSTS_PER_PAGE'],
+      error_out=False)
+   posts = Post.query.order_by(Post.timestamp.desc()).paginate()
+   next_url = url_for('post', page=posts.next_num) \
+      if posts.has_next else None
+   prev_url = url_for('post', page=posts.prev_num) \
+      if posts.has_prev else None
+
    return render_template(
       'post.html',
       title='Home',
       form=form,
-      posts=posts)
+      posts=posts.items,
+      next_url=next_url,
+      prev_url=prev_url)
 
 @app.before_request
 def before_request():
@@ -74,11 +86,22 @@ def profile(username):
    """profile page"""
    user = User.query.filter_by(username=username).first_or_404()
    posts = current_user.posts.all()
+   page= request.args.get('page', 1, type=int)
+   posts= current_user.posts.paginate(
+      page=page,
+      per_page=app.config['POSTS_PER_PAGE'],
+      error_out=False)
+   next_url = url_for('post', username=current_user.username, page=posts.next_num) \
+      if posts.has_next else None
+   prev_url = url_for('post', username=current_user.username, page=posts.prev_num) \
+      if posts.has_prev else None
    return render_template(
       'profile.html' ,
       title='Profile' ,
       user=user,
-      posts=posts)
+      posts=posts.items,
+      next_url=next_url,
+      prev_url=prev_url)
 
 
 @app.route('/edit_profile', methods=['GET', 'POST'])

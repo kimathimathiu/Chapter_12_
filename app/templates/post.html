@@ -41,5 +41,22 @@
                 {%endif%}
             {%endfor%}
         </div>
+        <div class="row">
+            <div class="col-md-12">
+                {%for post in posts %}
+                    {% if post %}
+                        {% include '_post.html' %}
+                    {%endif%}
+                {% endfor %}
+
+                {% if prev_url %}
+                    <a href="{{ prev_url }}">Newer posts</a>
+                {% endif %}
+
+                {% if next_url %}
+                    <a href="{{ next_url }}">Older posts</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
 {%endblock%}
